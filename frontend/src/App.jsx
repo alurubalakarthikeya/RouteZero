@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Settings, CheckSquare, Menu, LogOut, User, Shield, Truck, AlertTriangle, ChevronUp, ChevronDown, MapPin, Search } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import './App.css';
 
@@ -169,8 +169,27 @@ function App() {
         </div>
         <div className="card-body">
           <div className="control-group">
-            <label className="control-label">Fuel Priority</label>
-            <input type="range" min="0" max="100" value={fuelPriority} onChange={(e) => setFuelPriority(Number(e.target.value))} className="slider-green" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <label className="control-label" style={{ marginBottom: 0 }}>Fuel Priority</label>
+              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--success)' }}>{fuelPriority}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={fuelPriority} onChange={(e) => setFuelPriority(Number(e.target.value))} className="slider-green modern-slider" />
+          </div>
+
+          <div className="control-group" style={{ marginTop: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <label className="control-label" style={{ marginBottom: 0 }}>Duration Priority</label>
+              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--brand-blue)' }}>{timePriority}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={timePriority} onChange={(e) => setTimePriority(Number(e.target.value))} className="slider-blue modern-slider" />
+          </div>
+
+          <div className="control-group" style={{ marginTop: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <label className="control-label" style={{ marginBottom: 0 }}>Emissions Priority</label>
+              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--brand-color)' }}>{co2Priority}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={co2Priority} onChange={(e) => setCo2Priority(Number(e.target.value))} className="slider-teal modern-slider" />
           </div>
           <div className="control-group" style={{ marginTop: '2rem' }}>
             <label className="control-label">Payload Weight</label>
@@ -236,7 +255,7 @@ function App() {
 
   return (
     <div className={`app-container ${isMobile ? 'mobile-google-maps-mode' : ''}`}>
-      <header className="header" style={{ position: isMobile ? 'fixed' : 'relative', top: 0, width: '100%' }}>
+      <header className="header">
         <div className="header-left">
           <div className="logo"><div className="logo-icon">R</div><span>RouteZero</span></div>
           {!isMobile && <span className="header-subtitle">Dynamic & Quantum-Inspired Logistics</span>}
@@ -262,34 +281,36 @@ function App() {
               <div className="nav-popup"><h4>Settings</h4><ul><li><Shield size={14} /> Privacy & Security</li></ul></div>
             )}
           </div>
-          <div className="nav-item-container">
-            <div className="avatar" onClick={() => togglePopup('profile')}>
-              <img src="https://i.pravatar.cc/150?img=11" alt="User Avatar" />
-            </div>
-            {activePopup === 'profile' && (
-              <div className="nav-popup avatar-popup"><h4>Admin User</h4><ul><li><LogOut size={14} /> Logout</li></ul></div>
-            )}
-          </div>
+          {/* User profile avatar removed as requested */}
         </div>
       </header>
 
       {isMobileMenuOpen && (
-        <div className="mobile-dropdown-nav" style={{ position: 'fixed', top: '72px', width: '100%', zIndex: 100 }}>
+        <div className="mobile-dropdown-nav">
           <div className="mobile-nav-item" onClick={() => togglePopup('mobile-notifications')}><span className="mobile-nav-text">Notifications (3 new)</span></div>
           {activePopup === 'mobile-notifications' && <div className="mobile-popup-content"><li>Storm update received</li></div>}
           <div className="mobile-nav-item" onClick={() => togglePopup('mobile-settings')}><span className="mobile-nav-text">Settings</span></div>
           {activePopup === 'mobile-settings' && <div className="mobile-popup-content"><li>Privacy & Security</li></div>}
-          <div className="mobile-nav-item" onClick={() => togglePopup('mobile-profile')}><span className="mobile-nav-text">Profile (Admin)</span></div>
-          {activePopup === 'mobile-profile' && <div className="mobile-popup-content"><li>Logout</li></div>}
         </div>
       )}
 
       {/* Map is always background, full screen */}
       <div className="map-background-wrapper">
-        <MapContainer center={[51.505, -0.09]} zoom={4} style={{ height: '100%', width: '100%' }} zoomControl={!isMobile}>
+        <MapContainer
+          center={[51.505, -0.09]}
+          zoom={4}
+          minZoom={3}
+          maxBounds={[[-85, -180], [85, 180]]}
+          maxBoundsViscosity={1.0}
+          style={{ height: '100%', width: '100%' }}
+          zoomControl={false}
+        >
+          <ZoomControl position="topright" />
           <TileLayer
             attribution='&copy; OpenStreetMap'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            noWrap={true}
+            bounds={[[-85, -180], [85, 180]]}
           />
           {userLocation && (
             <Marker position={userLocation} icon={userIcon}>
@@ -333,8 +354,8 @@ function App() {
       {/* Destination Modal */}
       {showDestModal && (
         <div className="modal-overlay">
-          <div className="modal-content card">
-            <h3 style={{ marginBottom: '1rem' }}><MapPin size={20} style={{ display: 'inline', marginRight: 8, color: 'var(--brand-blue)' }} /> Where are you going?</h3>
+          <div className="modal-content">
+            <h3 className="modal-title"><MapPin size={20} style={{ display: 'inline', marginRight: 8, color: 'var(--brand-blue)' }} /> Where are you going?</h3>
             <form onSubmit={handleSetDestination}>
               <div className="input-with-unit" style={{ marginBottom: '1rem' }}>
                 <Search size={16} style={{ position: 'absolute', left: 10, color: 'gray' }} />

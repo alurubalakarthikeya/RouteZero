@@ -60,15 +60,25 @@ p {
 
 /* Header styling */
 .header {
-  height: 72px;
-  background-color: var(--card-bg);
-  border-bottom: 1px solid var(--border-color);
+  height: 64px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1400px;
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(30, 41, 59, 0.1);
+  z-index: 1000;
+  transition: all 0.3s ease;
 }
 
 .header-left {
@@ -168,25 +178,28 @@ p {
 /* Removed old layout */
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .desktop-floating-panel {
   position: absolute;
-  top: 86px;
-  left: 20px;
+  top: 104px;
+  right: 20px;
+  left: auto;
   bottom: 20px;
   width: 420px;
   overflow-y: auto;
-  border-radius: 16px;
+  border-radius: 24px;
   padding: 1.5rem;
   z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  transition: all 0.3s ease;
 }
 
 .desktop-floating-panel::-webkit-scrollbar {
@@ -198,20 +211,14 @@ p {
   border-radius: 3px;
 }
 
-.header {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
-  /* The rest remains via the later classes */
-}
-
 /* Base Cards */
 .card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   display: flex;
   flex-direction: column;
 }
@@ -252,34 +259,34 @@ p {
 input[type="range"] {
   width: 100%;
   appearance: none;
-  height: 6px;
-  background: #cbd5e1;
-  border-radius: 3px;
+  height: 8px;
+  background: rgba(203, 213, 225, 0.5);
+  border-radius: 4px;
   outline: none;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: white;
-  border: 2px solid var(--brand-color);
+  border: 3px solid var(--brand-color);
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-top: -6px;
-  transition: transform 0.1s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-top: -7px;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
-  height: 6px;
+  height: 8px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 input[type="range"]:active::-webkit-slider-thumb {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .slider-green::-webkit-slider-thumb {
@@ -288,6 +295,10 @@ input[type="range"]:active::-webkit-slider-thumb {
 
 .slider-blue::-webkit-slider-thumb {
   border-color: var(--brand-blue);
+}
+
+.slider-teal::-webkit-slider-thumb {
+  border-color: var(--brand-color);
 }
 
 .input-with-unit {
@@ -447,22 +458,33 @@ input[type="range"]:active::-webkit-slider-thumb {
   align-items: center;
 }
 
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .nav-popup {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 15px;
-  background: var(--card-bg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  width: 250px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  width: 280px;
   z-index: 1000;
-  padding: 1rem;
-}
-
-.avatar-popup {
-  width: 180px;
+  padding: 1.25rem;
+  animation: popupFadeIn 0.2s ease-out;
 }
 
 .nav-popup h4 {
@@ -514,26 +536,38 @@ input[type="range"]:active::-webkit-slider-thumb {
 
 /* Mobile Dropdown Options */
 .mobile-dropdown-nav {
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border-color);
-  padding: 0;
-  box-shadow: var(--shadow-sm);
+  position: absolute;
+  top: 86px;
+  left: 5%;
+  width: 90%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 0.5rem 0;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  animation: popupFadeIn 0.2s ease-out;
 }
 
 .mobile-nav-item {
-  padding: 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
   cursor: pointer;
   font-weight: 500;
   color: var(--text-main);
 }
 
+.mobile-nav-item:last-child {
+  border-bottom: none;
+}
+
 .mobile-popup-content {
-  padding: 0.5rem 1rem 1rem 2rem;
-  background: #f8fafc;
+  padding: 0.5rem 1.5rem 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-muted);
   font-size: 0.875rem;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .mobile-popup-content li {
@@ -549,6 +583,15 @@ input[type="range"]:active::-webkit-slider-thumb {
   z-index: 1;
 }
 
+.leaflet-top.leaflet-right .leaflet-control {
+  margin-top: 110px !important;
+  margin-right: 20px !important;
+}
+
+.leaflet-top.leaflet-left .leaflet-control-zoom {
+  display: none !important;
+}
+
 .mobile-map-full .leaflet-container {
   border-radius: 0;
 }
@@ -557,7 +600,9 @@ input[type="range"]:active::-webkit-slider-thumb {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -567,7 +612,23 @@ input[type="range"]:active::-webkit-slider-thumb {
 
 .modal-content {
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-title {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  color: var(--text-main);
 }
 
 /* Bottom Sheet */
@@ -582,15 +643,16 @@ input[type="range"]:active::-webkit-slider-thumb {
   flex-direction: column;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .bottom-sheet.collapsed {
-  transform: translateY(calc(100% - 75px));
-  /* Expose more of the handle */
+  transform: translateY(65%);
+  /* Exposes 35% of the panel */
 }
 
 .bottom-sheet.expanded {
@@ -637,11 +699,19 @@ input[type="range"]:active::-webkit-slider-thumb {
 
 @media (max-width: 768px) {
   .header {
-    padding: 0 1rem;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(5px);
-    box-shadow: var(--shadow-sm);
-    border-bottom: none;
+    padding: 0 1.25rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 8px 32px rgba(30, 41, 59, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 9999px;
+    position: absolute;
+    top: 16px;
+    left: 5%;
+    width: 90%;
+    transform: none;
+    height: 60px;
   }
 
   .header-subtitle {
@@ -658,5 +728,10 @@ input[type="range"]:active::-webkit-slider-thumb {
 
   .insights-content {
     flex-direction: column;
+  }
+
+  .leaflet-top.leaflet-right .leaflet-control {
+    margin-top: 10vh !important;
+    margin-right: 1.25rem !important;
   }
 }
