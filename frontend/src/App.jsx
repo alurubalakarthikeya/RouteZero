@@ -71,7 +71,20 @@ function App() {
   // Destination Prompt
   const [showDestModal, setShowDestModal] = useState(false);
   const [destQuery, setDestQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [isRouting, setIsRouting] = useState(false);
+
+  const [activeTab, setActiveTab] = useState('optimize');
+
+  const scrollToSection = (e, id) => {
+    e.preventDefault();
+    setActiveTab(id);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   // Form states
   const [fuelPriority, setFuelPriority] = useState(80);
@@ -104,6 +117,28 @@ function App() {
     }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Autocomplete Suggestions
+  useEffect(() => {
+    if (destQuery.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    const delayDebounceFn = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destQuery)}&limit=5`);
+        const data = await res.json();
+        setSuggestions(data || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [destQuery]);
 
   const handleSetDestination = async (e) => {
     e.preventDefault();
@@ -163,11 +198,17 @@ function App() {
   const renderSidebarContent = () => (
     <>
       {/* Search Route Card on top inside bottom sheet or left sidebar */}
-      <div className="card">
+      <div id="optimize" className="card">
         <div className="card-header">
           <h2 className="card-title">Optimize Route</h2>
         </div>
         <div className="card-body">
+          <div className="preset-pills" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+            <button type="button" className={`preset-pill ${fuelPriority === 80 && timePriority === 30 && co2Priority === 60 ? 'active' : ''}`} onClick={() => { setFuelPriority(80); setTimePriority(30); setCo2Priority(60); }}>Balanced</button>
+            <button type="button" className={`preset-pill ${fuelPriority === 90 && timePriority === 40 && co2Priority === 30 ? 'active' : ''}`} onClick={() => { setFuelPriority(90); setTimePriority(40); setCo2Priority(30); }}>Economy</button>
+            <button type="button" className={`preset-pill ${fuelPriority === 50 && timePriority === 90 && co2Priority === 40 ? 'active' : ''}`} onClick={() => { setFuelPriority(50); setTimePriority(90); setCo2Priority(40); }}>Fast</button>
+            <button type="button" className={`preset-pill ${fuelPriority === 40 && timePriority === 30 && co2Priority === 90 ? 'active' : ''}`} onClick={() => { setFuelPriority(40); setTimePriority(30); setCo2Priority(90); }}>Eco</button>
+          </div>
           <div className="control-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <label className="control-label" style={{ marginBottom: 0 }}>Fuel Priority</label>
@@ -202,25 +243,6 @@ function App() {
         </div>
       </div>
 
-      {/* Fleet Status */}
-      <div className="card" style={{ marginTop: '1.5rem' }}>
-        <div className="card-header"><h2 className="card-title">Fleet Status</h2></div>
-        <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div className="info-row">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Truck size={16} className="event-icon" /><span className="info-label">Active En-route</span></div>
-            <span className="info-value bold">14</span>
-          </div>
-          <div className="info-row">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckSquare size={16} color="var(--text-muted)" /><span className="info-label">Standby / Idle</span></div>
-            <span className="info-value bold">2</span>
-          </div>
-          <div className="info-row">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><AlertTriangle size={16} color="var(--warning)" /><span className="info-label">Needs Maintenance</span></div>
-            <span className="info-value bold" style={{ color: 'var(--warning)' }}>1</span>
-          </div>
-        </div>
-      </div>
-
       <div className="card" style={{ marginTop: '1.5rem' }}>
         <div className="card-header" style={{ paddingBottom: '0.75rem', borderBottom: '1px solid rgba(226, 232, 240, 0.5)' }}>
           <h2 className="card-title">Route Summary</h2>
@@ -242,7 +264,26 @@ function App() {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: '1.5rem' }}>
+      {/* Fleet Status */}
+      <div id="fleet" className="card" style={{ marginTop: '1.5rem' }}>
+        <div className="card-header"><h2 className="card-title">Fleet Status</h2></div>
+        <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="info-row">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Truck size={16} className="event-icon" /><span className="info-label">Active En-route</span></div>
+            <span className="info-value bold">14</span>
+          </div>
+          <div className="info-row">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckSquare size={16} color="var(--text-muted)" /><span className="info-label">Standby / Idle</span></div>
+            <span className="info-value bold">2</span>
+          </div>
+          <div className="info-row">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><AlertTriangle size={16} color="var(--warning)" /><span className="info-label">Needs Maintenance</span></div>
+            <span className="info-value bold" style={{ color: 'var(--warning)' }}>1</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="analytics" className="card" style={{ marginTop: '1.5rem' }}>
         <div className="card-header" style={{ paddingBottom: '0.75rem', borderBottom: '1px solid rgba(226, 232, 240, 0.5)' }}>
           <h2 className="card-title">Sustainability Metrics</h2>
         </div>
@@ -285,27 +326,6 @@ function App() {
           </div>
         </div>
       </div>
-
-      <div className="card" style={{ marginTop: '1.5rem' }}>
-        <div className="card-header"><h2 className="card-title">Optimization Insights</h2></div>
-        <div className="card-body insights-body">
-          <div className="insights-content" style={{ flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
-            <div className="chart-wrapper">
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="time" hide />
-                  <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                  <Tooltip />
-                  <ReferenceLine x="4" stroke="#e2e8f0" strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey="cost" stroke="#3b82f6" strokeWidth={3} dot={false} isAnimationActive={false} />
-                  <Line type="monotone" dataKey="timeVal" stroke="#eab308" strokeWidth={3} dot={false} isAnimationActive={false} />
-                  <Line type="monotone" dataKey="emissions" stroke="#10b981" strokeWidth={3} dot={false} isAnimationActive={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      </div>
     </>
   );
 
@@ -317,11 +337,31 @@ function App() {
           {!isMobile && <span className="header-subtitle">Dynamic & Quantum-Inspired Logistics</span>}
         </div>
 
+        {!isMobile && (
+          <nav className="desktop-center-nav">
+            <a href="#optimize" className={`nav-link ${activeTab === 'optimize' ? 'active' : ''}`} onClick={(e) => scrollToSection(e, 'optimize')}>Optimization</a>
+            <a href="#fleet" className={`nav-link ${activeTab === 'fleet' ? 'active' : ''}`} onClick={(e) => scrollToSection(e, 'fleet')}>Fleet Tracking</a>
+            <a href="#analytics" className={`nav-link ${activeTab === 'analytics' ? 'active' : ''}`} onClick={(e) => scrollToSection(e, 'analytics')}>Analytics</a>
+          </nav>
+        )}
+
         <div className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           <Menu size={24} />
         </div>
 
         <div className="header-right desktop-nav">
+          {!isMobile && (
+            <>
+              <div className="header-status">
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Network Status</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div className="status-dot" style={{ width: '8px', height: '8px', background: 'var(--success)', borderRadius: '50%' }}></div>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}>Optimal</span>
+                </div>
+              </div>
+              <div className="nav-separator"></div>
+            </>
+          )}
           <div className="nav-item-container">
             <Bell className="header-icon" size={20} onClick={() => togglePopup('notifications')} />
             {activePopup === 'notifications' && (
@@ -412,16 +452,38 @@ function App() {
           <div className="modal-content">
             <h3 className="modal-title"><MapPin size={24} style={{ display: 'inline', marginRight: 12, color: 'var(--brand-blue)' }} /> Where to?</h3>
             <form onSubmit={handleSetDestination}>
-              <div className="input-with-unit modern-search-input" style={{ marginBottom: '1.5rem' }}>
-                <Search size={18} style={{ position: 'absolute', left: 16, color: 'var(--text-muted)' }} />
-                <input
-                  type="text"
-                  autoFocus
-                  placeholder="Enter a city or address..."
-                  style={{ paddingLeft: '3rem', textAlign: 'left' }}
-                  value={destQuery}
-                  onChange={e => setDestQuery(e.target.value)}
-                />
+              <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+                <div className="input-with-unit modern-search-input" style={{ marginBottom: 0 }}>
+                  <Search size={18} style={{ position: 'absolute', left: 16, color: 'var(--text-muted)' }} />
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="Enter a city or address..."
+                    style={{ paddingLeft: '3rem', textAlign: 'left' }}
+                    value={destQuery}
+                    onChange={e => {
+                      setDestQuery(e.target.value);
+                    }}
+                  />
+                </div>
+
+                {suggestions.length > 0 && (
+                  <div className="suggestions-dropdown">
+                    {suggestions.map((s, idx) => (
+                      <div
+                        key={idx}
+                        className="suggestion-item"
+                        onClick={() => {
+                          setDestQuery(s.display_name);
+                          setSuggestions([]);
+                        }}
+                      >
+                        <MapPin size={16} strokeWidth={2.5} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.875rem', lineHeight: '1.2' }}>{s.display_name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button type="button" className="btn-primary btn-cancel" onClick={() => setShowDestModal(false)}>Cancel</button>

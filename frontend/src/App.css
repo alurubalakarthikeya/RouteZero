@@ -69,12 +69,12 @@ p {
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  position: absolute;
+  position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90%;
-  max-width: 1400px;
+  width: 94%;
+  max-width: none;
   border-radius: 9999px;
   box-shadow: 0 8px 32px rgba(30, 41, 59, 0.1);
   z-index: 1000;
@@ -188,7 +188,7 @@ p {
 .desktop-floating-panel {
   position: absolute;
   top: 104px;
-  right: 5%;
+  right: 3%;
   left: auto;
   bottom: 20px;
   width: 420px;
@@ -213,12 +213,13 @@ p {
 
 /* Base Cards */
 .card {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.85);
+  /* Less transparent, more solid */
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   display: flex;
   flex-direction: column;
 }
@@ -541,8 +542,8 @@ input[type="range"]:active::-webkit-slider-thumb {
 .mobile-dropdown-nav {
   position: absolute;
   top: 86px;
-  left: 5%;
-  width: 90%;
+  left: 3%;
+  width: 94%;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -588,7 +589,7 @@ input[type="range"]:active::-webkit-slider-thumb {
 
 .leaflet-top.leaflet-right .leaflet-control {
   margin-top: 110px !important;
-  margin-right: 20px !important;
+  margin-right: 12px !important;
 }
 
 .leaflet-top.leaflet-left .leaflet-control-zoom {
@@ -745,10 +746,10 @@ input[type="range"]:active::-webkit-slider-thumb {
     box-shadow: 0 8px 32px rgba(30, 41, 59, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 9999px;
-    position: absolute;
+    position: fixed;
     top: 16px;
-    left: 5%;
-    width: 90%;
+    left: 3%;
+    width: 94%;
     transform: none;
     height: 60px;
   }
@@ -773,4 +774,122 @@ input[type="range"]:active::-webkit-slider-thumb {
     margin-top: 10vh !important;
     margin-right: 1.25rem !important;
   }
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.suggestions-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-main);
+  text-align: left;
+}
+
+.suggestion-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--brand-blue);
+}
+
+.preset-pill {
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  color: var(--text-main);
+  border-radius: 9999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preset-pill:hover {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+.preset-pill.active {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--brand-blue);
+  border-color: var(--brand-blue);
+}
+
+.desktop-center-nav {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--text-main);
+}
+
+.nav-link.active {
+  color: var(--brand-blue);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--brand-blue);
+  border-radius: 3px 3px 0 0;
+}
+
+.header-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  margin-right: 0.5rem;
+}
+
+.nav-separator {
+  width: 1px;
+  height: 28px;
+  background-color: rgba(148, 163, 184, 0.3);
+  margin: 0 1rem;
 }
